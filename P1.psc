@@ -1,6 +1,6 @@
 Algoritmo CarritoDeCompras
 	
-    // === 1. DECLARAR VARIABLES Y CONSTANTES ===
+    // DECLARAR VARIABLES Y CONSTANTES 
     Definir IVA, DESCUENTO_CUPON, DESCUENTO_CANTIDAD Como Real
     Definir COSTO_ENVIO_FIJO, COSTO_ENVIO_POR_KG Como Real
     Definir i, totalUnidades Como Entero
@@ -8,43 +8,40 @@ Algoritmo CarritoDeCompras
     Definir respuesta Como Caracter
     Definir pesoTotal, subtotal, totalBruto, totalDescuento1, totalDescuento2, totalIVA, totalEnvio, totalFinal Como Real
 	
-    // Inicializar constantes
+	Dimension nombre[10], ciudad[10], cantidad[10]
+    Dimension precioOriginal[10], conDescuento[10], conIVA[10]
+    Dimension conDescuentoCantidad[10], precioFinal[10]
+    Dimension datosProducto[10, 2]  // [0] = precio, [1] = peso
+	
+    //Traté de hacerlo correr sin declarar los valores altiro pero se me caía, entonces declarandolos me dabaja avanzar
     IVA <- 0.12
     DESCUENTO_CUPON <- 0.10
     DESCUENTO_CANTIDAD <- 0.05
     COSTO_ENVIO_FIJO <- 10
     COSTO_ENVIO_POR_KG <- 2
-	
-    // Inicializar contadores
     i <- 1
     totalUnidades <- 0
 	
-    // Arreglos necesarios
-    Dimension nombre[10], ciudad[10], cantidad[10]
-    Dimension precioOriginal[10], conDescuento[10], conIVA[10]
-    Dimension conDescuentoCantidad[10], precioFinal[10]
-    Dimension datosProducto[10, 2] // [0] = precio, [1] = peso
 	
-    // === 2. LEER DATOS DE ENTRADA ===
     Escribir "--------------------------------------------"
     Escribir "BIENVENIDO AL CARRITO DE COMPRAS"
-    Escribir "Máximo 10 unidades en total."
+    Escribir "Maximo 10 unidades en total."
 	
     Repetir
         Escribir "Producto ", i, ":"
 		
-        Escribir "Ingrese el Nombre de su producto:"
+        Escribir "Ingrese el nombre de su producto:"
         Leer nombre[i]
 		
         Escribir "Precio original:"
         Leer datosProducto[i,1]
         precioOriginal[i] <- datosProducto[i,1]
 		
-        Escribir "Cantidad (máx disponible: ", 10 - totalUnidades, "):"
+        Escribir "Cantidad (max disponible: ", 10 - totalUnidades, "):"
         Repetir
             Leer cantidadTemp
             Si cantidadTemp < 0 O cantidadTemp > (10 - totalUnidades) Entonces
-                Escribir "Cantidad inválida. Intente con un número entre 0 y ", 10 - totalUnidades
+                Escribir "Cantidad invalida. Intente con un numero entre 0 y ", 10 - totalUnidades
             FinSi
         Hasta Que cantidadTemp >= 0 Y cantidadTemp <= (10 - totalUnidades)
 		
@@ -62,14 +59,14 @@ Algoritmo CarritoDeCompras
             Leer respuesta
             respuesta <- Minusculas(respuesta)
         Sino
-            Escribir "Has alcanzado el máximo de 10 unidades."
+            Escribir "Has alcanzado el maximo de 10 unidades."
             respuesta <- "n"
         FinSi
 		
         i <- i + 1
     Hasta Que respuesta = "n" O i > 10
 	
-    // === 3. CÁLCULOS ===
+
     totalBruto <- 0
     totalDescuento1 <- 0
     totalIVA <- 0
@@ -80,15 +77,12 @@ Algoritmo CarritoDeCompras
         subtotal <- precioOriginal[j] * cantidad[j]
         totalBruto <- totalBruto + subtotal
 		
-        // Descuento por cupón
         conDescuento[j] <- precioOriginal[j] * (1 - DESCUENTO_CUPON)
         totalDescuento1 <- totalDescuento1 + (precioOriginal[j] * DESCUENTO_CUPON * cantidad[j])
 		
-        // Aplicar IVA
         conIVA[j] <- conDescuento[j] * (1 + IVA)
         totalIVA <- totalIVA + (conDescuento[j] * IVA * cantidad[j])
-		
-        // Descuento adicional por cantidad
+		        
         Si cantidad[j] >= 2 Entonces
             conDescuentoCantidad[j] <- conIVA[j] * (1 - DESCUENTO_CANTIDAD)
             totalDescuento2 <- totalDescuento2 + (conIVA[j] * DESCUENTO_CANTIDAD * cantidad[j])
@@ -96,12 +90,11 @@ Algoritmo CarritoDeCompras
             conDescuentoCantidad[j] <- conIVA[j]
         FinSi
 		
-        // Precio final unitario y acumulado
         precioFinal[j] <- conDescuentoCantidad[j]
         totalFinal <- totalFinal + (precioFinal[j] * cantidad[j])
     FinPara
 	
-    // Calcular envío
+    //Cálculo del envío
     pesoTotal <- 0
     Para j <- 1 Hasta i - 1 Hacer
         pesoTotal <- pesoTotal + datosProducto[j,1]
@@ -110,12 +103,12 @@ Algoritmo CarritoDeCompras
     totalEnvio <- COSTO_ENVIO_FIJO + (COSTO_ENVIO_POR_KG * pesoTotal)
     totalFinal <- totalFinal + totalEnvio
 	
-    // === 4. IMPRIMIR RESULTADOS ===
+    // Resumen final para el cliente
     Escribir "-------- DETALLE DE COMPRA --------"
     Para j <- 1 Hasta i - 1
         Escribir "Producto ", j, ": ", nombre[j]
         Escribir "  Precio original: $", precioOriginal[j]
-        Escribir "  Subtotal con cupón (10%): $", conDescuento[j]
+        Escribir "  Subtotal con cup?n (10%): $", conDescuento[j]
         Escribir "  + IVA (12%): $", conIVA[j]
         Si cantidad[j] >= 2 Entonces
             Escribir "  - Descuento por cantidad (5%): aplicado"
@@ -130,12 +123,12 @@ Algoritmo CarritoDeCompras
 	
     Escribir "-------- RESUMEN FINAL --------"
     Escribir "Subtotal bruto sin descuentos: $", totalBruto
-    Escribir "Descuento por cupón (10%): -$", totalDescuento1
+    Escribir "Descuento por cupon (10%): -$", totalDescuento1
     Escribir "IVA (12%): +$", totalIVA
     Escribir "Descuento por cantidad (5%): -$", totalDescuento2
-    Escribir "Costo de envío: $", totalEnvio
+    Escribir "Costo de envio: $", totalEnvio
     Escribir "TOTAL A PAGAR: $", totalFinal
 	
-    Escribir "*** Ejecución Finalizada. ***"
+    Escribir "*** GRACIAS POR SU COMPRA. ***"
 	
 FinAlgoritmo
